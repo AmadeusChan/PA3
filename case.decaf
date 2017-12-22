@@ -1,0 +1,9 @@
+class Main {
+	static void main() {
+		int x;
+		x = ReadInteger();
+		int y;
+		Print(x + 10);
+		Print("\n");
+	}
+}

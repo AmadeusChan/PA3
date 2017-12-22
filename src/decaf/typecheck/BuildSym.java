@@ -154,6 +154,7 @@ public class BuildSym extends Tree.Visitor {
 		table.close();
 	}
 
+	/*
 	// visiting types
 	@Override
 	public void visitTypeIdent(Tree.TypeIdent type) {
@@ -166,6 +167,27 @@ public class BuildSym extends Tree.Visitor {
 			break;
 		case Tree.BOOL:
 			type.type = BaseType.BOOL;
+			break;
+		default:
+			type.type = BaseType.STRING;
+		}
+	}
+	*/
+
+	@Override
+	public void visitTypeIdent(Tree.TypeIdent type) {
+		switch (type.typeTag) {
+		case Tree.VOID:
+			type.type = BaseType.VOID;
+			break;
+		case Tree.INT:
+			type.type = BaseType.INT;
+			break;
+		case Tree.BOOL:
+			type.type = BaseType.BOOL;
+			break;
+		case Tree.COMPLEX:
+			type.type = BaseType.COMPLEX;
 			break;
 		default:
 			type.type = BaseType.STRING;
@@ -306,4 +328,12 @@ public class BuildSym extends Tree.Visitor {
 		return type.getReturnType().equal(BaseType.VOID)
 				&& type.numOfParams() == 0 && ((Function) main).isStatik();
 	}
+
+	@Override
+	public void visitDoOdLoop(Tree.DoOdLoop loop) {
+		for (Tree stmt: loop.stmtList) {
+			stmt.accept(this);
+		}
+	}
+
 }
