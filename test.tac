@@ -49,5 +49,14 @@ _L10:
     _T21 = "\n"
     parm _T21
     call _PrintString
+    _T22 = 0
+    if (_T22 != 0) branch _L11
+    _T23 = "Decaf runtime error: Division by zero error.\n"
+    parm _T23
+    call _PrintString
+    call _Halt
+_L11:
+    _T24 = (_T3 / _T22)
+    _T5 = _T24
 }
 

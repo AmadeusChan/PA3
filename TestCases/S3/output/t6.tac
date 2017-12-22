@@ -173,116 +173,128 @@ _L27:
     _T79 = 3
     _T80 = (_T78 * _T79)
     _T81 = 4
-    _T82 = (_T80 / _T81)
-    _T83 = 2
-    _T84 = (_T82 % _T83)
-    _T85 = (_T77 + _T84)
-    _T86 = 4
-    _T87 = (_T67 * _T86)
-    _T88 = (_T25 + _T87)
-    *(_T88 + 0) = _T85
-    _T89 = 0
-    _T90 = *(_T26 - 4)
-    _T91 = (_T89 < _T90)
-    if (_T91 == 0) branch _L28
-    _T92 = 0
-    _T93 = (_T89 < _T92)
-    if (_T93 == 0) branch _L29
+    if (_T81 != 0) branch _L28
+    _T82 = "Decaf runtime error: Division by zero error.\n"
+    parm _T82
+    call _PrintString
+    call _Halt
 _L28:
-    _T94 = "Decaf runtime error: Array subscript out of bounds\n"
-    parm _T94
+    _T83 = (_T80 / _T81)
+    _T84 = 2
+    if (_T84 != 0) branch _L29
+    _T85 = "Decaf runtime error: Division by zero error.\n"
+    parm _T85
     call _PrintString
     call _Halt
 _L29:
-    _T95 = 4
-    _T96 = (_T89 * _T95)
-    _T97 = (_T26 + _T96)
-    _T98 = *(_T97 + 0)
-    _T99 = 0
-    _T100 = *(_T25 - 4)
-    _T101 = (_T99 < _T100)
-    if (_T101 == 0) branch _L30
-    _T102 = 0
-    _T103 = (_T99 < _T102)
-    if (_T103 == 0) branch _L31
+    _T86 = (_T83 % _T84)
+    _T87 = (_T77 + _T86)
+    _T88 = 4
+    _T89 = (_T67 * _T88)
+    _T90 = (_T25 + _T89)
+    *(_T90 + 0) = _T87
+    _T91 = 0
+    _T92 = *(_T26 - 4)
+    _T93 = (_T91 < _T92)
+    if (_T93 == 0) branch _L30
+    _T94 = 0
+    _T95 = (_T91 < _T94)
+    if (_T95 == 0) branch _L31
 _L30:
-    _T104 = "Decaf runtime error: Array subscript out of bounds\n"
-    parm _T104
+    _T96 = "Decaf runtime error: Array subscript out of bounds\n"
+    parm _T96
     call _PrintString
     call _Halt
 _L31:
-    _T105 = 4
-    _T106 = (_T99 * _T105)
-    _T107 = (_T25 + _T106)
-    _T108 = *(_T107 + 0)
-    _T109 = *(_T98 - 4)
-    _T110 = (_T108 < _T109)
-    if (_T110 == 0) branch _L32
-    _T111 = 0
-    _T112 = (_T108 < _T111)
-    if (_T112 == 0) branch _L33
+    _T97 = 4
+    _T98 = (_T91 * _T97)
+    _T99 = (_T26 + _T98)
+    _T100 = *(_T99 + 0)
+    _T101 = 0
+    _T102 = *(_T25 - 4)
+    _T103 = (_T101 < _T102)
+    if (_T103 == 0) branch _L32
+    _T104 = 0
+    _T105 = (_T101 < _T104)
+    if (_T105 == 0) branch _L33
 _L32:
-    _T113 = "Decaf runtime error: Array subscript out of bounds\n"
-    parm _T113
+    _T106 = "Decaf runtime error: Array subscript out of bounds\n"
+    parm _T106
     call _PrintString
     call _Halt
 _L33:
-    _T114 = 4
-    _T115 = (_T108 * _T114)
-    _T116 = (_T98 + _T115)
-    _T117 = *(_T116 + 0)
-    _T118 = 55
-    _T119 = 4
-    _T120 = (_T108 * _T119)
-    _T121 = (_T98 + _T120)
-    *(_T121 + 0) = _T118
-    _T122 = 0
-    _T123 = *(_T25 - 4)
-    _T124 = (_T122 < _T123)
-    if (_T124 == 0) branch _L34
-    _T125 = 0
-    _T126 = (_T122 < _T125)
-    if (_T126 == 0) branch _L35
+    _T107 = 4
+    _T108 = (_T101 * _T107)
+    _T109 = (_T25 + _T108)
+    _T110 = *(_T109 + 0)
+    _T111 = *(_T100 - 4)
+    _T112 = (_T110 < _T111)
+    if (_T112 == 0) branch _L34
+    _T113 = 0
+    _T114 = (_T110 < _T113)
+    if (_T114 == 0) branch _L35
 _L34:
-    _T127 = "Decaf runtime error: Array subscript out of bounds\n"
-    parm _T127
+    _T115 = "Decaf runtime error: Array subscript out of bounds\n"
+    parm _T115
     call _PrintString
     call _Halt
 _L35:
-    _T128 = 4
-    _T129 = (_T122 * _T128)
-    _T130 = (_T25 + _T129)
-    _T131 = *(_T130 + 0)
-    parm _T131
-    call _PrintInt
-    _T132 = " "
-    parm _T132
-    call _PrintString
-    _T133 = 2
-    _T134 = 100
-    _T135 = 0
-    _T136 = *(_T26 - 4)
-    _T137 = (_T135 < _T136)
-    if (_T137 == 0) branch _L36
-    _T138 = 0
-    _T139 = (_T135 < _T138)
-    if (_T139 == 0) branch _L37
+    _T116 = 4
+    _T117 = (_T110 * _T116)
+    _T118 = (_T100 + _T117)
+    _T119 = *(_T118 + 0)
+    _T120 = 55
+    _T121 = 4
+    _T122 = (_T110 * _T121)
+    _T123 = (_T100 + _T122)
+    *(_T123 + 0) = _T120
+    _T124 = 0
+    _T125 = *(_T25 - 4)
+    _T126 = (_T124 < _T125)
+    if (_T126 == 0) branch _L36
+    _T127 = 0
+    _T128 = (_T124 < _T127)
+    if (_T128 == 0) branch _L37
 _L36:
-    _T140 = "Decaf runtime error: Array subscript out of bounds\n"
-    parm _T140
+    _T129 = "Decaf runtime error: Array subscript out of bounds\n"
+    parm _T129
     call _PrintString
     call _Halt
 _L37:
-    _T141 = 4
-    _T142 = (_T135 * _T141)
-    _T143 = (_T26 + _T142)
-    _T144 = *(_T143 + 0)
+    _T130 = 4
+    _T131 = (_T124 * _T130)
+    _T132 = (_T25 + _T131)
+    _T133 = *(_T132 + 0)
+    parm _T133
+    call _PrintInt
+    _T134 = " "
     parm _T134
-    parm _T144
-    parm _T25
-    _T145 =  call _Main.Binky
-    _T146 = (_T133 * _T145)
+    call _PrintString
+    _T135 = 2
+    _T136 = 100
+    _T137 = 0
+    _T138 = *(_T26 - 4)
+    _T139 = (_T137 < _T138)
+    if (_T139 == 0) branch _L38
+    _T140 = 0
+    _T141 = (_T137 < _T140)
+    if (_T141 == 0) branch _L39
+_L38:
+    _T142 = "Decaf runtime error: Array subscript out of bounds\n"
+    parm _T142
+    call _PrintString
+    call _Halt
+_L39:
+    _T143 = 4
+    _T144 = (_T137 * _T143)
+    _T145 = (_T26 + _T144)
+    _T146 = *(_T145 + 0)
+    parm _T136
     parm _T146
+    parm _T25
+    _T147 =  call _Main.Binky
+    _T148 = (_T135 * _T147)
+    parm _T148
     call _PrintInt
 }
 
