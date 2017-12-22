@@ -386,4 +386,25 @@ public class TransPass2 extends Tree.Visitor {
 		}
 		typeCast.val = typeCast.expr.val;
 	}
+
+	@Override
+	public void visitCase(Tree.Case that) {
+		that.condition.accept(this);
+		Label exit = Label.createLabel();
+		Temp value = Temp.createTempI4();
+		int len = that.caseConstList.size();
+		for (int i = 0; i < len; ++ i) {
+			Tree.Expr con = that.caseConstList.get(i);
+			Tree.Expr exp = that.caseExprList.get(i);
+			con.accept(this);
+			exp.accept(this);
+			tr.genAssign(value, exp.val);
+			Temp cmp = tr.genSub(con.val, that.condition.val);
+			tr.genBeqz(cmp, exit);
+		}
+		that.defaultExpr.accept(this);
+		tr.genAssign(value, that.defaultExpr.val);
+		tr.genMark(exit);
+		that.val = value;
+	}
 }
