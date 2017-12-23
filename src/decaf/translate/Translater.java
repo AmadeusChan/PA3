@@ -22,6 +22,8 @@ import decaf.tac.VTable;
 import decaf.type.BaseType;
 import decaf.type.Type;
 
+import decaf.tac.*;
+
 public class Translater {
 	private List<VTable> vtables;
 
@@ -113,8 +115,14 @@ public class Translater {
 		while (iter.hasNext()) {
 			Variable v = (Variable) iter.next();
 			Temp t = v.getTemp();
-			t.offset = v.getOffset();
-			sb.append(t.name + ":" + t.offset + " ");
+			if (t instanceof ComplexTemp) {
+				t.offset = v.getOffset();
+				sb.append(((ComplexTemp) t).re.name + ":" + t.offset + " ");
+				sb.append(((ComplexTemp) t).im.name + ":" + (t.offset + 4) + " ");
+			} else {
+				t.offset = v.getOffset();
+				sb.append(t.name + ":" + t.offset + " ");
+			}
 		}
 		if (sb.length() > 0) {
 			return Tac.genMemo(sb.substring(0, sb.length() - 1));
@@ -162,6 +170,15 @@ public class Translater {
 	}
 
 	public Temp genAdd(Temp src1, Temp src2) {
+		if ((src1 instanceof ComplexTemp) || (src2 instanceof ComplexTemp)) {
+			if (!(src1 instanceof ComplexTemp)) {
+				src1 = genInt2Comp(src1);
+			}
+			if (!(src2 instanceof ComplexTemp)) {
+				src2 = genInt2Comp(src2);
+			}
+			return genCompAdd((ComplexTemp) src1, (ComplexTemp) src2);
+		}
 		Temp dst = Temp.createTempI4();
 		append(Tac.genAdd(dst, src1, src2));
 		return dst;
@@ -174,6 +191,15 @@ public class Translater {
 	}
 
 	public Temp genMul(Temp src1, Temp src2) {
+		if ((src1 instanceof ComplexTemp) || (src2 instanceof ComplexTemp)) {
+			if (!(src1 instanceof ComplexTemp)) {
+				src1 = genInt2Comp(src1);
+			}
+			if (!(src2 instanceof ComplexTemp)) {
+				src2 = genInt2Comp(src2);
+			}
+			return genCompMul((ComplexTemp) src1, (ComplexTemp) src2);
+		}
 		Temp dst = Temp.createTempI4();
 		append(Tac.genMul(dst, src1, src2));
 		return dst;
@@ -264,7 +290,14 @@ public class Translater {
 	}
 
 	public void genAssign(Temp dst, Temp src) {
-		append(Tac.genAssign(dst, src));
+		//System.out.println("*******log*****: " + (dst instanceof ComplexTemp) + " " + (src instanceof ComplexTemp));
+		if (src instanceof ComplexTemp) {
+			//return ;
+			append(Tac.genAssign(((ComplexTemp) dst).re, ((ComplexTemp) src).re));
+			append(Tac.genAssign(((ComplexTemp) dst).im, ((ComplexTemp) src).im));
+		} else {
+			append(Tac.genAssign(dst, src));
+		}
 	}
 
 	public Temp genLoadVTable(VTable vtbl) {
@@ -306,6 +339,7 @@ public class Translater {
 		return dst;
 	}
 
+	// what about the return type is complex? 
 	public void genReturn(Temp src) {
 		append(Tac.genReturn(src));
 	}
@@ -322,14 +356,35 @@ public class Translater {
 		append(Tac.genBnez(cond, dst));
 	}
 
-	public Temp genLoad(Temp base, int offset) {
-		Temp dst = Temp.createTempI4();
-		append(Tac.genLoad(dst, base, Temp.createConstTemp(offset)));
-		return dst;
+	public Temp genLoad(Temp base, int offset, boolean isComplex) {
+		if (isComplex) {
+			ComplexTemp dst = new ComplexTemp();
+			append(Tac.genLoad(dst.re, base, Temp.createConstTemp(offset)));
+			append(Tac.genLoad(dst.im, base, Temp.createConstTemp(offset + 4)));
+			return (Temp) dst;
+		} else {
+			Temp dst = Temp.createTempI4();
+			append(Tac.genLoad(dst, base, Temp.createConstTemp(offset)));
+			return dst;
+		}
 	}
 
+	/*
+	public Temp genLoadComp(Temp base, int offset) {
+		ComplexTemp dst = new ComplexTemp();
+		append(Tac.genLoad(dst.re, base, Temp.createConstTemp(offset)));
+		append(Tac.genLoad(dst.im, base, Temp.createConstTemp(offset + 4)));
+		return dst;
+	}
+	*/
+
 	public void genStore(Temp src, Temp base, int offset) {
-		append(Tac.genStore(src, base, Temp.createConstTemp(offset)));
+		if (src instanceof ComplexTemp) {
+			append(Tac.genStore(((ComplexTemp) src).re, base, Temp.createConstTemp(offset)));
+			append(Tac.genStore(((ComplexTemp) src).im, base, Temp.createConstTemp(offset + 4)));
+		} else {
+			append(Tac.genStore(src, base, Temp.createConstTemp(offset)));
+		}
 	}
 
 	public Temp genLoadImm4(int imm) {
@@ -353,11 +408,16 @@ public class Translater {
 	}
 
 	public void genParm(Temp parm) {
-		append(Tac.genParm(parm));
+		if (parm instanceof ComplexTemp) {
+			append(Tac.genParm(((ComplexTemp) parm).re));
+			append(Tac.genParm(((ComplexTemp) parm).im));
+		} else {
+			append(Tac.genParm(parm));
+		}
 	}
 
 	public void genCheckArrayIndex(Temp array, Temp index) {
-		Temp length = genLoad(array, -OffsetCounter.WORD_SIZE);
+		Temp length = genLoad(array, -OffsetCounter.WORD_SIZE, false);
 		Temp cond = genLes(index, length);
 		Label err = Label.createLabel();
 		genBeqz(cond, err);
@@ -383,6 +443,7 @@ public class Translater {
 		genMark(exit);
 	}
 
+	// should be modified
 	public Temp genNewArray(Temp length) {
 		genCheckNewArraySize(length);
 		Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
@@ -445,7 +506,7 @@ public class Translater {
 		Label loop = Label.createLabel();
 		Label exit = Label.createLabel();
 		Temp targetVp = genLoadVTable(c.getVtable());
-		Temp vp = genLoad(instance, 0);
+		Temp vp = genLoad(instance, 0, false);
 		genMark(loop);
 		append(Tac.genEqu(dst, targetVp, vp));
 		genBnez(dst, exit);
@@ -461,7 +522,7 @@ public class Translater {
 		Label exit = Label.createLabel();
 		Temp cond = Temp.createTempI4();
 		Temp targetVp = genLoadVTable(c.getVtable());
-		Temp vp = genLoad(val, 0);
+		Temp vp = genLoad(val, 0, false);
 		genMark(loop);
 		append(Tac.genEqu(cond, targetVp, vp));
 		genBnez(cond, exit);
@@ -470,13 +531,13 @@ public class Translater {
 		Temp msg = genLoadStrConst(RuntimeError.CLASS_CAST_ERROR1);
 		genParm(msg);
 		genIntrinsicCall(Intrinsic.PRINT_STRING);
-		Temp instanceClassName = genLoad(genLoad(val, 0), 4);
+		Temp instanceClassName = genLoad(genLoad(val, 0, false), 4, false);
 		genParm(instanceClassName);
 		genIntrinsicCall(Intrinsic.PRINT_STRING);
 		msg = genLoadStrConst(RuntimeError.CLASS_CAST_ERROR2);
 		genParm(msg);
 		genIntrinsicCall(Intrinsic.PRINT_STRING);
-		Temp targetClassName = genLoad(genLoadVTable(c.getVtable()), 4);
+		Temp targetClassName = genLoad(genLoadVTable(c.getVtable()), 4, false);
 		genParm(targetClassName);
 		genIntrinsicCall(Intrinsic.PRINT_STRING);
 		msg = genLoadStrConst(RuntimeError.CLASS_CAST_ERROR3);
@@ -485,4 +546,69 @@ public class Translater {
 		genIntrinsicCall(Intrinsic.HALT);
 		genMark(exit);
 	}
+
+	/*
+	public Temp genAdd(Temp src1, Temp src2) {
+		Temp dst = Temp.createTempI4();
+		append(Tac.genAdd(dst, src1, src2));
+		return dst;
+	}
+	*/
+
+	public ComplexTemp genCompAdd(ComplexTemp src1, ComplexTemp src2) {
+		ComplexTemp dst = new ComplexTemp();
+		append(Tac.genAdd(dst.re, src1.re, src2.re));
+		append(Tac.genAdd(dst.im, src1.im, src2.im));
+		return dst;
+	}
+
+	public ComplexTemp genCompMul(ComplexTemp src1, ComplexTemp src2) {
+		ComplexTemp dst = new ComplexTemp();
+		Temp tmp = Temp.createTempI4();
+		append(Tac.genMul(dst.re, src1.re, src2.re));
+		append(Tac.genMul(tmp, src1.im, src2.im));
+		append(Tac.genSub(dst.re, dst.re, tmp));
+		append(Tac.genMul(dst.im, src1.re, src2.im));
+		append(Tac.genMul(tmp, src1.im, src2.re));
+		append(Tac.genAdd(dst.im, dst.im, tmp));
+		return dst;
+	}
+
+	public ComplexTemp genInt2Comp(Temp src) {
+		ComplexTemp dst = new ComplexTemp();
+		append(Tac.genAssign(dst.re, src));
+		append(Tac.genLoadImm4(dst.im, Temp.createConstTemp(0)));
+		return dst;
+	}
+
+	public ComplexTemp genLoadCompImg(int img) {
+		ComplexTemp dst = new ComplexTemp();
+		append(Tac.genLoadImm4(dst.re, Temp.createConstTemp(0)));
+		append(Tac.genLoadImm4(dst.im, Temp.createConstTemp(img)));
+		return dst;
+	}
+
+	public Temp genCompRe(ComplexTemp src) {
+		Temp dst = Temp.createTempI4();
+		append(Tac.genAssign(dst, src.re));
+		return dst;
+	}
+
+	public Temp genCompIm(ComplexTemp src) {
+		Temp dst = Temp.createTempI4();
+		append(Tac.genAssign(dst, src.im));
+		return dst;
+	}
+
+	public void genPrintComp(ComplexTemp src) {
+		genParm(src.re);
+		genIntrinsicCall(Intrinsic.PRINT_INT);
+		genParm(genLoadStrConst("+"));
+		genIntrinsicCall(Intrinsic.PRINT_STRING);
+		genParm(src.im);
+		genIntrinsicCall(Intrinsic.PRINT_INT);
+		genParm(genLoadStrConst("j"));
+		genIntrinsicCall(Intrinsic.PRINT_STRING);
+	}
+
 }

@@ -11,6 +11,8 @@ public final class OffsetCounter {
 
 	public static final int DOUBLE_SIZE = 8;
 
+	public static final int COMPLEX_SIZE = 8;
+
 	private static final int[] initValue = new int[] { -2 * WORD_SIZE,
 			WORD_SIZE, POINTER_SIZE };
 

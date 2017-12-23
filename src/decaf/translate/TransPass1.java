@@ -12,6 +12,9 @@ import decaf.symbol.Symbol;
 import decaf.symbol.Variable;
 import decaf.tac.Temp;
 
+import decaf.type.*;
+import decaf.tac.*;
+
 public class TransPass1 extends Tree.Visitor {
 	private Translater tr;
 
@@ -57,8 +60,13 @@ public class TransPass1 extends Tree.Visitor {
 		} else {
 			oc.reset();
 		}
+		// class member variables
 		for (Variable v : vars) {
-			v.setOffset(oc.next(OffsetCounter.WORD_SIZE));
+			if (v.getType().equal(BaseType.COMPLEX)) {
+				v.setOffset(oc.next(OffsetCounter.COMPLEX_SIZE));
+			} else {
+				v.setOffset(oc.next(OffsetCounter.WORD_SIZE));
+			}
 		}
 	}
 
@@ -87,18 +95,31 @@ public class TransPass1 extends Tree.Visitor {
 		}
 		for (Tree.VarDef vd : funcDef.formals) {
 			vd.symbol.setOrder(order++);
-			Temp t = Temp.createTempI4();
-			t.sym = vd.symbol;
-			t.isParam = true;
-			vd.symbol.setTemp(t);
-			vd.symbol.setOffset(oc.next(vd.symbol.getTemp().size));
+			Temp t;
+			if (vd.symbol.getType().equal(BaseType.COMPLEX)) {
+				t = new ComplexTemp();
+				t.sym = vd.symbol;
+				t.isParam = true;
+				vd.symbol.setTemp(t);
+				vd.symbol.setOffset(oc.next(OffsetCounter.COMPLEX_SIZE));
+			} else {
+				t = Temp.createTempI4();
+				t.sym = vd.symbol;
+				t.isParam = true;
+				vd.symbol.setTemp(t);
+				vd.symbol.setOffset(oc.next(vd.symbol.getTemp().size));
+			}
 		}
 	}
 
 	@Override
 	public void visitVarDef(Tree.VarDef varDef) {
 		vars.add(varDef.symbol);
-		objectSize += OffsetCounter.WORD_SIZE;
+		if (varDef.symbol.getType().equal(BaseType.COMPLEX)) {
+			objectSize += OffsetCounter.COMPLEX_SIZE;
+		} else {
+			objectSize += OffsetCounter.WORD_SIZE;
+		}
 	}
 
 }
