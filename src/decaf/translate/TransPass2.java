@@ -499,4 +499,45 @@ public class TransPass2 extends Tree.Visitor {
 		expr.val = tr.genDCopy(expr.expr.val, ((ClassType) expr.expr.type).getSymbol());
 	}
 
+	/*
+	@Override
+	public void visitWhileLoop(Tree.WhileLoop whileLoop) {
+		Label loop = Label.createLabel();
+		tr.genMark(loop);
+		whileLoop.condition.accept(this);
+		Label exit = Label.createLabel();
+		tr.genBeqz(whileLoop.condition.val, exit);
+		loopExits.push(exit);
+		if (whileLoop.loopBody != null) {
+			whileLoop.loopBody.accept(this);
+		}
+		tr.genBranch(loop);
+		loopExits.pop();
+		tr.genMark(exit);
+	}
+	*/
+
+	@Override
+	public void visitDoOdLoop(Tree.DoOdLoop that) {
+		Label loop = Label.createLabel();
+		tr.genMark(loop);
+		Label exit = Label.createLabel();
+		loopExits.push(exit);
+
+		int len = that.exprList.size();
+		for (int i = 0; i < len; ++ i) {
+			that.exprList.get(i).accept(this);
+			Label sin = Label.createLabel();
+			Label sout = Label.createLabel();
+			tr.genBeqz(that.exprList.get(i).val, sout);
+			tr.genMark(sin);
+			that.stmtList.get(i).accept(this);
+			tr.genBranch(loop);
+			tr.genMark(sout);
+		}
+
+		loopExits.pop();
+		tr.genMark(exit);
+	}
+
 }

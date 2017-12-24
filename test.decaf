@@ -1,60 +1,11 @@
-class A {
-	int a;
-	void setAx(int x) {
-		a = x;
-	}
-	void printAx() {
-		Print(a);
-		Print("\n");
-	}
-}
-
-class B {
-	int b;
-	class A a;
-	void init() {
-		a = new A();
-	}
-	void setB(int x) {
-		b = x;
-	}
-	void printB() {
-		Print(b);
-		Print("\n");
-	}
-	void setA(int x) {
-		a.setAx(x);
-	}
-	void printA() {
-		a.printAx();
-	}
-}
-
 class Main {
 	static void main() {
-		class B b1;
-		class B b2;
-
-		b1 = new B();
-		b1.init();
-
-		b1.setA(1);
-		b1.setB(2);
-		b1.printA();
-		b1.printB();
-
-		b2 = dcopy(b1);
-
-		b2.printA();
-		b2.printB();
-
-		b2.setA(3);
-		b2.setB(4);
-
-		b2.printA();
-		b2.printB();
-
-		b1.printA();
-		b1.printB();
+		int i;
+		i = 0;
+		do 
+			i < 2: i = i + 1; ||| 
+			i < 4: i = i + 3; 
+		od;
+		Print(i, "\n");
 	}
 }
