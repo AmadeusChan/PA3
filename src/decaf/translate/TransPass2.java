@@ -11,6 +11,7 @@ import decaf.tac.Temp;
 import decaf.type.BaseType;
 
 import decaf.tac.*;
+import decaf.type.*;
 
 public class TransPass2 extends Tree.Visitor {
 
@@ -492,11 +493,10 @@ public class TransPass2 extends Tree.Visitor {
 		expr.val = tr.genSCopy(expr.expr);
 	}
 
-	/*
 	@Override
 	public void visitDCopyExpr(Tree.DCopyExpr expr) {
-		expr.val = tr.genDCopy(expr);
+		expr.expr.accept(this);
+		expr.val = tr.genDCopy(expr.expr.val, ((ClassType) expr.expr.type).getSymbol());
 	}
-	*/
 
 }

@@ -685,26 +685,44 @@ public class Translater {
 	public Temp genDCopy(Temp old_obj, Class c) {
 		Temp new_obj = genDirectCall(c.getNewFuncLabel(), BaseType.INT);   
 
-		Label loop = Label.createLabel();
-		Label exit = Label.createLabel();
-		Temp cnt = genLoadImm4(c.getSize());
+		//Label loop = Label.createLabel();
+		//Label exit = Label.createLabel();
+		///Temp cnt = genLoadImm4(c.getSize());
+		//System.out.println(c.getSize());
 		Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
+		Temp doubleUnit = genLoadImm4(OffsetCounter.COMPLEX_SIZE);
 
-		Temp old_pt = createTempI4();
-		Temp new_pt = createTempI4();
-		genAssign(old_pt, old_obj);
-		genAssign(new_pt, new_obj);
+		Temp old_pt = Temp.createTempI4();
+		Temp new_pt = Temp.createTempI4();
+		genAssign(old_pt, genAdd(old_obj, unit));
+		genAssign(new_pt, genAdd(new_obj, unit));
 
 		Iterator<Symbol> iter = c.getAssociatedScope().iterator();
 		while (iter.hasNext()) {
 			Symbol sym = iter.next();
+			if (sym.isVariable()) {
+				//System.out.println(sym.getName());
+				Variable var = (Variable) sym;
+				if (var.getType().isClassType()) {
+					//System.out.println("Class");
+					genStore(genDCopy(genLoad(old_pt, 0, false), ((ClassType) var.getType()).getSymbol()), new_pt, 0);
+					genAssign(old_pt, genAdd(old_pt, unit));
+					genAssign(new_pt, genAdd(new_pt, unit));
+				} else {
+					if (var.getType().equal(BaseType.COMPLEX)) {
+						//System.out.println("Complex");
+						genStore(genLoad(old_pt, 0, true), new_pt, 0);
+						genAssign(old_pt, genAdd(old_pt, doubleUnit));
+						genAssign(new_pt, genAdd(new_pt, doubleUnit));
+					} else {
+						//System.out.println("others");
+						genStore(genLoad(old_pt, 0, false), new_pt, 0);
+						genAssign(old_pt, genAdd(old_pt, unit));
+						genAssign(new_pt, genAdd(new_pt, unit));
+					}
+				}
+			}
 		}
-
-		genMark(loop);
-		genBeqz(cnt, exit);
-
-		genBranch(loop);
-		genMark(exit);
 
 		// store vtable
 		Temp vt = genLoadVTable(c.getVtable());

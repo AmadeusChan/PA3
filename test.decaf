@@ -1,9 +1,9 @@
 class A {
 	int a;
-	void setA(int x) {
+	void setAx(int x) {
 		a = x;
 	}
-	void printA() {
+	void printAx() {
 		Print(a);
 		Print("\n");
 	}
@@ -23,10 +23,10 @@ class B {
 		Print("\n");
 	}
 	void setA(int x) {
-		a.setA(x);
+		a.setAx(x);
 	}
 	void printA() {
-		a.printA();
+		a.printAx();
 	}
 }
 
@@ -43,7 +43,7 @@ class Main {
 		b1.printA();
 		b1.printB();
 
-		b2 = scopy(b1);
+		b2 = dcopy(b1);
 
 		b2.printA();
 		b2.printB();

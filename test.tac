@@ -1,8 +1,8 @@
 VTABLE(_A) {
     <empty>
     A
-    _A.setA;
-    _A.printA;
+    _A.setAx;
+    _A.printAx;
 }
 
 VTABLE(_B) {
@@ -58,16 +58,16 @@ _Main_New:
     return _T19
 }
 
-FUNCTION(_A.setA) {
+FUNCTION(_A.setAx) {
 memo '_T0:4 _T1:8'
-_A.setA:
+_A.setAx:
     _T21 = *(_T0 + 4)
     *(_T0 + 4) = _T1
 }
 
-FUNCTION(_A.printA) {
+FUNCTION(_A.printAx) {
 memo '_T2:4'
-_A.printA:
+_A.printAx:
     _T22 = *(_T2 + 4)
     parm _T22
     call _PrintInt
@@ -153,56 +153,77 @@ main:
     _T49 = *(_T48 + 16)
     call _T49
     _T50 =  call _B_New
-    _T51 = 12
-    _T52 = 4
-_L19:
-    if (_T51 == 0) branch _L20
-    _T53 = (_T51 - _T52)
-    _T51 = _T53
-    _T54 = (_T35 + _T51)
-    _T55 = *(_T54 + 0)
+    _T51 = 4
+    _T52 = 8
+    _T55 = (_T35 + _T51)
+    _T53 = _T55
     _T56 = (_T50 + _T51)
-    *(_T56 + 0) = _T55
-    branch _L19
-_L20:
-    _T57 = VTBL <_B>
-    *(_T50 + 0) = _T57
+    _T54 = _T56
+    _T57 = *(_T53 + 0)
+    *(_T54 + 0) = _T57
+    _T58 = (_T53 + _T51)
+    _T53 = _T58
+    _T59 = (_T54 + _T51)
+    _T54 = _T59
+    _T60 = *(_T53 + 0)
+    _T61 =  call _A_New
+    _T62 = 4
+    _T63 = 8
+    _T66 = (_T60 + _T62)
+    _T64 = _T66
+    _T67 = (_T61 + _T62)
+    _T65 = _T67
+    _T68 = *(_T64 + 0)
+    *(_T65 + 0) = _T68
+    _T69 = (_T64 + _T62)
+    _T64 = _T69
+    _T70 = (_T65 + _T62)
+    _T65 = _T70
+    _T71 = VTBL <_A>
+    *(_T61 + 0) = _T71
+    *(_T54 + 0) = _T61
+    _T72 = (_T53 + _T51)
+    _T53 = _T72
+    _T73 = (_T54 + _T51)
+    _T54 = _T73
+    _T74 = VTBL <_B>
+    *(_T50 + 0) = _T74
     _T36 = _T50
     parm _T36
-    _T58 = *(_T36 + 0)
-    _T59 = *(_T58 + 24)
-    call _T59
+    _T75 = *(_T36 + 0)
+    _T76 = *(_T75 + 24)
+    call _T76
     parm _T36
-    _T60 = *(_T36 + 0)
-    _T61 = *(_T60 + 16)
-    call _T61
-    _T62 = 3
+    _T77 = *(_T36 + 0)
+    _T78 = *(_T77 + 16)
+    call _T78
+    _T79 = 3
     parm _T36
-    parm _T62
-    _T63 = *(_T36 + 0)
-    _T64 = *(_T63 + 20)
-    call _T64
-    _T65 = 4
+    parm _T79
+    _T80 = *(_T36 + 0)
+    _T81 = *(_T80 + 20)
+    call _T81
+    _T82 = 4
     parm _T36
-    parm _T65
-    _T66 = *(_T36 + 0)
-    _T67 = *(_T66 + 12)
-    call _T67
+    parm _T82
+    _T83 = *(_T36 + 0)
+    _T84 = *(_T83 + 12)
+    call _T84
     parm _T36
-    _T68 = *(_T36 + 0)
-    _T69 = *(_T68 + 24)
-    call _T69
+    _T85 = *(_T36 + 0)
+    _T86 = *(_T85 + 24)
+    call _T86
     parm _T36
-    _T70 = *(_T36 + 0)
-    _T71 = *(_T70 + 16)
-    call _T71
+    _T87 = *(_T36 + 0)
+    _T88 = *(_T87 + 16)
+    call _T88
     parm _T35
-    _T72 = *(_T35 + 0)
-    _T73 = *(_T72 + 24)
-    call _T73
+    _T89 = *(_T35 + 0)
+    _T90 = *(_T89 + 24)
+    call _T90
     parm _T35
-    _T74 = *(_T35 + 0)
-    _T75 = *(_T74 + 16)
-    call _T75
+    _T91 = *(_T35 + 0)
+    _T92 = *(_T91 + 16)
+    call _T92
 }
 
