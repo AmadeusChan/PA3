@@ -72,7 +72,7 @@ _L18:
     _T24 = 3
     parm _T0
     parm _T24
-    _T25 = *(_T0 + 0)
+    _T25 = VTBL <_Stack>
     _T26 = *(_T25 + 12)
     call _T26
 }

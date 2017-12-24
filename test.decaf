@@ -1,16 +1,37 @@
-class Test {
-	complex a;
+class A {
 	void go() {
-		this.a = 1 + 3j;
-		PrintComp(a);
-		Print("\n");
+		Print("class A\n");
+	}
+	void exec() {
+		go();
+	}
+}
+
+class B extends A {
+	void go() {
+		Print("class B\n");
+	}
+	void exec() {
+		this.go();
+	}
+}
+
+class C extends B {
+	void go() {
+		Print("class B\n");
+	}
+	void hello() {
+		super.exec();
+	}
+	void exec() {
+		this.go();
 	}
 }
 
 class Main {
 	static void main() {
-		class Test t;
-		t = new Test();
-		t.go();
+		class C c;
+		c = new C();
+		c.hello();
 	}
 }

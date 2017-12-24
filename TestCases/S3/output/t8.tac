@@ -92,7 +92,7 @@ _Cow.InitCow:
     parm _T5
     parm _T6
     parm _T7
-    _T26 = *(_T5 + 0)
+    _T26 = VTBL <_Cow>
     _T27 = *(_T26 + 8)
     call _T27
 }

@@ -17,6 +17,7 @@ public class TransPass2 extends Tree.Visitor {
 	private Translater tr;
 
 	private Temp currentThis;
+	private Temp currentSuper;
 
 	private Stack<Label> loopExits;
 
@@ -37,6 +38,7 @@ public class TransPass2 extends Tree.Visitor {
 		if (!funcDefn.statik) {
 			currentThis = ((Variable) funcDefn.symbol.getAssociatedScope()
 					.lookup("this")).getTemp();
+			//currentSuper = funcDefn.symbol.getAssociatedScope()
 		}
 		tr.beginFunc(funcDefn.symbol);
 		funcDefn.body.accept(this);
@@ -317,10 +319,29 @@ public class TransPass2 extends Tree.Visitor {
 						callExpr.symbol.getFuncty().label, callExpr.symbol
 								.getReturnType());
 			} else {
-				Temp vt = tr.genLoad(callExpr.receiver.val, 0, false);
-				Temp func = tr.genLoad(vt, callExpr.symbol.getOffset(), false);
-				callExpr.val = tr.genIndirectCall(func, callExpr.symbol
+				//System.out.println("genInDirectCall");
+				//Temp vt = tr.genLoad(callExpr.receiver.val, 0, false); // VTable of current object
+				if (callExpr.receiver instanceof Tree.SuperExpr) {
+					//VTable funpvt = callExpr.getScope().getScope().getOwner().getParent().getVtable();
+					VTable funpvt = tr.getCurrentFuncty().sym.getScope().getOwner().getParent().getVtable();
+					Temp pvt = tr.genLoadVTable(funpvt);
+					//tr.genStore(pvt, callExpr.receiver.val, 0);
+					Temp func = tr.genLoad(pvt, callExpr.symbol.getOffset(), false);
+					callExpr.val = tr.genIndirectCall(func, callExpr.symbol
+							.getReturnType());
+					//tr.genStore(vt, callExpr.receiver.val, 0);
+				} else if (callExpr.receiver instanceof Tree.ThisExpr) {
+					VTable funvt = tr.getCurrentFuncty().sym.getScope().getOwner().getVtable();
+					Temp vt = tr.genLoadVTable(funvt);
+					Temp func = tr.genLoad(vt, callExpr.symbol.getOffset(), false);
+					callExpr.val = tr.genIndirectCall(func, callExpr.symbol
+							.getReturnType());
+				} else {
+					Temp vt = tr.genLoad(callExpr.receiver.val, 0, false);
+					Temp func = tr.genLoad(vt, callExpr.symbol.getOffset(), false);
+					callExpr.val = tr.genIndirectCall(func, callExpr.symbol
 						.getReturnType());
+				}
 			}
 		}
 
@@ -451,4 +472,18 @@ public class TransPass2 extends Tree.Visitor {
 			tr.genPrintComp((ComplexTemp) that.exprs.get(i).val);
 		}
 	}
+
+	/*
+	@Override
+	public void visitThisExpr(Tree.ThisExpr thisExpr) {
+		thisExpr.val = currentThis;
+	}
+	*/
+
+	@Override
+	public void visitSuperExpr(Tree.SuperExpr SuperExpr) {
+		SuperExpr.val = currentThis;
+		//callExpr.symbol.getScope().getOwner().getVtable(); 
+	}
+
 }

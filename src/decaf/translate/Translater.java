@@ -36,6 +36,10 @@ public class Translater {
 		funcs = new ArrayList<Functy>();
 	}
 
+	public Functy getCurrentFuncty() {
+		return currentFuncty;
+	}
+
 	public static Translater translate(Tree.TopLevel tree) {
 		Translater tr = new Translater();
 		TransPass1 tp1 = new TransPass1(tr);
