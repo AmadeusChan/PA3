@@ -46,6 +46,7 @@ public class TransPass1 extends Tree.Visitor {
 
 	@Override
 	public void visitClassDef(Tree.ClassDef classDef) {
+		//System.out.println(classDef.symbol.getName() + ":" + classDef.symbol.getSize());
 		classDef.symbol.resolveFieldOrder();
 		objectSize = 0;
 		vars.clear();
@@ -68,6 +69,7 @@ public class TransPass1 extends Tree.Visitor {
 				v.setOffset(oc.next(OffsetCounter.WORD_SIZE));
 			}
 		}
+		//System.out.println(classDef.symbol.getName() + ":" + classDef.symbol.getSize());
 	}
 
 	@Override

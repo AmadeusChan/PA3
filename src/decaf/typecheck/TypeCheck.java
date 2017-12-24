@@ -462,6 +462,7 @@ public class TypeCheck extends Tree.Visitor {
 	@Override
 	public void visitNewArray(Tree.NewArray newArrayExpr) {
 		newArrayExpr.elementType.accept(this);
+		//System.out.println(newArrayExpr.elementType.type);
 		if (newArrayExpr.elementType.type.equal(BaseType.ERROR)) {
 			newArrayExpr.type = BaseType.ERROR;
 		} else if (newArrayExpr.elementType.type.equal(BaseType.VOID)) {
@@ -853,6 +854,7 @@ public class TypeCheck extends Tree.Visitor {
 	}
 
 	// visiting types
+	/*
 	@Override
 	public void visitTypeIdent(Tree.TypeIdent type) {
 		switch (type.typeTag) {
@@ -864,6 +866,26 @@ public class TypeCheck extends Tree.Visitor {
 			break;
 		case Tree.BOOL:
 			type.type = BaseType.BOOL;
+			break;
+		default:
+			type.type = BaseType.STRING;
+		}
+	}
+	*/
+	@Override
+	public void visitTypeIdent(Tree.TypeIdent type) {
+		switch (type.typeTag) {
+		case Tree.VOID:
+			type.type = BaseType.VOID;
+			break;
+		case Tree.INT:
+			type.type = BaseType.INT;
+			break;
+		case Tree.BOOL:
+			type.type = BaseType.BOOL;
+			break;
+		case Tree.COMPLEX:
+			type.type = BaseType.COMPLEX;
 			break;
 		default:
 			type.type = BaseType.STRING;

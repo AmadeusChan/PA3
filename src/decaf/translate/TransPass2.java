@@ -136,7 +136,12 @@ public class TransPass2 extends Tree.Visitor {
 		switch (assign.left.lvKind) {
 		case ARRAY_ELEMENT:
 			Tree.Indexed arrayRef = (Tree.Indexed) assign.left;
-			Temp esz = tr.genLoadImm4(OffsetCounter.WORD_SIZE);
+			Temp esz;
+			if (arrayRef.type.equal(BaseType.COMPLEX)) {
+				esz = tr.genLoadImm4(OffsetCounter.COMPLEX_SIZE);
+			} else {
+				esz = tr.genLoadImm4(OffsetCounter.WORD_SIZE);
+			}
 			Temp t = tr.genMul(arrayRef.index.val, esz);
 			Temp base = tr.genAdd(arrayRef.array.val, t);
 			tr.genStore(assign.expr.val, base, 0);
@@ -256,7 +261,12 @@ public class TransPass2 extends Tree.Visitor {
 		indexed.index.accept(this);
 		tr.genCheckArrayIndex(indexed.array.val, indexed.index.val);
 		
-		Temp esz = tr.genLoadImm4(OffsetCounter.WORD_SIZE);
+		Temp esz;
+		if (indexed.type.equal(BaseType.COMPLEX)) {
+			esz = tr.genLoadImm4(OffsetCounter.COMPLEX_SIZE);
+		} else {
+			esz = tr.genLoadImm4(OffsetCounter.WORD_SIZE);
+		}
 		Temp t = tr.genMul(indexed.index.val, esz);
 		Temp base = tr.genAdd(indexed.array.val, t);
 		indexed.val = tr.genLoad(base, 0, indexed.type.equal(BaseType.COMPLEX));
@@ -366,7 +376,7 @@ public class TransPass2 extends Tree.Visitor {
 	@Override
 	public void visitNewArray(Tree.NewArray newArray) {
 		newArray.length.accept(this);
-		newArray.val = tr.genNewArray(newArray.length.val);
+		newArray.val = tr.genNewArray(newArray.length.val, newArray.elementType.type.equal(BaseType.COMPLEX));
 	}
 
 	@Override

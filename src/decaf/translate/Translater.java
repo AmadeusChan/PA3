@@ -307,6 +307,11 @@ public class Translater {
 	}
 
 	public Temp genIndirectCall(Temp func, Type retType) {
+		if (retType.equal(BaseType.COMPLEX)) {
+			Temp add = Temp.createTempI4();
+			append(Tac.genIndirectCall(add, func));
+			return genLoad(add, 0, true);
+		}
 		Temp dst;
 		if (retType.equal(BaseType.VOID)) {
 			dst = null;
@@ -318,6 +323,11 @@ public class Translater {
 	}
 
 	public Temp genDirectCall(Label func, Type retType) {
+		if (retType.equal(BaseType.COMPLEX)) {
+			Temp add = Temp.createTempI4();
+			append(Tac.genDirectCall(add, func));
+			return genLoad(add, 0, true);
+		}
 		Temp dst;
 		if (retType.equal(BaseType.VOID)) {
 			dst = null;
@@ -329,6 +339,11 @@ public class Translater {
 	}
 
 	public Temp genIntrinsicCall(Intrinsic intrn) {
+		if (intrn.type.equal(BaseType.COMPLEX)) {
+			Temp add = Temp.createTempI4();
+			append(Tac.genDirectCall(add, intrn.label));
+			return genLoad(add, 0, true);
+		}
 		Temp dst;
 		if (intrn.type.equal(BaseType.VOID)) {
 			dst = null;
@@ -341,7 +356,14 @@ public class Translater {
 
 	// what about the return type is complex? 
 	public void genReturn(Temp src) {
-		append(Tac.genReturn(src));
+		if (src instanceof ComplexTemp) {
+			genParm(genLoadImm4(8));
+			Temp add = genIntrinsicCall(Intrinsic.ALLOCATE);
+			genStore(src, add, 0);
+			append(Tac.genReturn(add));
+		} else {
+			append(Tac.genReturn(src));
+		}
 	}
 
 	public void genBranch(Label dst) {
@@ -443,28 +465,50 @@ public class Translater {
 		genMark(exit);
 	}
 
-	// should be modified
-	public Temp genNewArray(Temp length) {
+	public Temp genNewArray(Temp length, boolean isComplex) {
 		genCheckNewArraySize(length);
-		Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
-		Temp size = genAdd(unit, genMul(unit, length));
-		genParm(size);
-		Temp obj = genIntrinsicCall(Intrinsic.ALLOCATE);
-		genStore(length, obj, 0);
-		Label loop = Label.createLabel();
-		Label exit = Label.createLabel();
-		Temp zero = genLoadImm4(0);
-		append(Tac.genAdd(obj, obj, size));
-		genMark(loop);
-		append(Tac.genSub(size, size, unit));
-		genBeqz(size, exit);
-		append(Tac.genSub(obj, obj, unit));
-		genStore(zero, obj, 0);
-		genBranch(loop);
-		genMark(exit);
-		return obj;
+
+		if (!isComplex) {
+			Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
+			Temp size = genAdd(unit, genMul(unit, length));
+			genParm(size);
+			Temp obj = genIntrinsicCall(Intrinsic.ALLOCATE);
+			genStore(length, obj, 0);
+			Label loop = Label.createLabel();
+			Label exit = Label.createLabel();
+			Temp zero = genLoadImm4(0);
+			append(Tac.genAdd(obj, obj, size));
+			genMark(loop);
+			append(Tac.genSub(size, size, unit));
+			genBeqz(size, exit);
+			append(Tac.genSub(obj, obj, unit));
+			genStore(zero, obj, 0);
+			genBranch(loop);
+			genMark(exit);
+			return obj;
+		} else {
+			Temp unit = genLoadImm4(OffsetCounter.COMPLEX_SIZE);
+			Temp word = genLoadImm4(OffsetCounter.WORD_SIZE);
+			Temp size = genAdd(word, genMul(unit, length));
+			genParm(size);
+			Temp obj = genIntrinsicCall(Intrinsic.ALLOCATE);
+			genStore(length, obj, 0);
+			Label loop = Label.createLabel();
+			Label exit = Label.createLabel();
+			Temp zero = genLoadImm4(0);
+			append(Tac.genAdd(obj, obj, size));
+			genMark(loop);
+			append(Tac.genSub(size, size, word));
+			genBeqz(size, exit);
+			append(Tac.genSub(obj, obj, word));
+			genStore(zero, obj, 0);
+			genBranch(loop);
+			genMark(exit);
+			return obj;
+		}
 	}
 
+	// should be modified
 	public void genNewForClass(Class c) {
 		currentFuncty = new Functy();
 		currentFuncty.label = Label.createLabel(

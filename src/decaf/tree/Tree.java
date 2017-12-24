@@ -836,6 +836,7 @@ public abstract class Tree {
 
         public NewArray(TypeLiteral elementType, Expr length, Location loc) {
             super(NEWARRAY, loc);
+		//System.out.println("array type" + this.elementType);
     		this.elementType = elementType;
     		this.length = length;
         }

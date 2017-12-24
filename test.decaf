@@ -1,20 +1,16 @@
-class Main {
-	static void Go(complex x) {
-		PrintComp(x + 1 + 2j);
-	}
-
-	static void main() {
-		complex z;
-		complex a;
-		int y;
-		y = ReadInteger();
-		a = case(y) {
-			0: 1+1j;
-			1: 3+3j;
-			default: 2+2j;
-		};
+class Test {
+	complex a;
+	void go() {
+		this.a = 1 + 3j;
 		PrintComp(a);
 		Print("\n");
-		Go(a);
+	}
+}
+
+class Main {
+	static void main() {
+		class Test t;
+		t = new Test();
+		t.go();
 	}
 }

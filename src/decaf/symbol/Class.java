@@ -10,6 +10,7 @@ import decaf.scope.GlobalScope;
 import decaf.tac.Label;
 import decaf.tac.VTable;
 import decaf.type.ClassType;
+import decaf.type.BaseType;
 
 public class Class extends Symbol {
 
@@ -171,7 +172,11 @@ public class Class extends Symbol {
 			Symbol sym = iter.next();
 			if (sym.isVariable()) {
 				sym.setOrder(numVar++);
-				size += OffsetCounter.WORD_SIZE;
+				if (sym.getType().equal(BaseType.COMPLEX)) {
+					size += OffsetCounter.COMPLEX_SIZE;
+				} else {
+					size += OffsetCounter.WORD_SIZE;
+				}
 			} else if (!((Function) sym).isStatik()) {
 				if (ps == null) {
 					sym.setOrder(numNonStaticFunc++);

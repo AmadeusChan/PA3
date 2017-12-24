@@ -1,17 +1,48 @@
-Exception in thread "main" java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
-	at decaf.translate.TransPass2.visitLiteral(TransPass2.java:159)
-	at decaf.tree.Tree$Literal.accept(Tree.java:1265)
-	at decaf.translate.TransPass2.visitBinary(TransPass2.java:64)
-	at decaf.tree.Tree$Binary.accept(Tree.java:985)
-	at decaf.translate.TransPass2.visitAssign(TransPass2.java:127)
-	at decaf.tree.Tree$Assign.accept(Tree.java:887)
-	at decaf.translate.TransPass2.visitBlock(TransPass2.java:188)
-	at decaf.tree.Tree$Block.accept(Tree.java:521)
-	at decaf.translate.TransPass2.visitMethodDef(TransPass2.java:40)
-	at decaf.tree.Tree$MethodDef.accept(Tree.java:441)
-	at decaf.translate.TransPass2.visitClassDef(TransPass2.java:29)
-	at decaf.tree.Tree$ClassDef.accept(Tree.java:406)
-	at decaf.translate.TransPass2.visitTopLevel(TransPass2.java:48)
-	at decaf.translate.Translater.translate(Translater.java:42)
-	at decaf.Driver.compile(Driver.java:104)
-	at decaf.Driver.main(Driver.java:117)
+VTABLE(_Main) {
+    <empty>
+    Main
+}
+
+FUNCTION(_Main_New) {
+memo ''
+_Main_New:
+    _T0 = 4
+    parm _T0
+    _T1 =  call _Alloc
+    _T2 = VTBL <_Main>
+    *(_T1 + 0) = _T2
+    return _T1
+}
+
+FUNCTION(main) {
+memo ''
+main:
+    _T8 = 1
+    _T5 = _T8
+    _T9 = "wow!"
+    _T4 = _T9
+    _T10 = 3
+    _T3 = _T10
+    _T11 = 1
+    _T12 = 0
+    _T13 = 3
+    _T14 = _T11
+    _T15 = 0
+    _T16 = (_T14 + _T12)
+    _T17 = (_T15 + _T13)
+    _T6 = _T16
+    _T7 = _T17
+    if (_T5 == 0) branch _L10
+    _T18 = 5
+    _T19 = (_T3 * _T18)
+    _T3 = _T19
+_L10:
+    parm _T5
+    call _PrintBool
+    _T20 = " "
+    parm _T20
+    call _PrintString
+    parm _T3
+    call _PrintInt
+}
+
