@@ -23,6 +23,7 @@ import decaf.type.BaseType;
 import decaf.type.Type;
 
 import decaf.tac.*;
+import decaf.type.*;
 
 public class Translater {
 	private List<VTable> vtables;
@@ -658,5 +659,96 @@ public class Translater {
 		genParm(genLoadStrConst("j"));
 		genIntrinsicCall(Intrinsic.PRINT_STRING);
 	}
+
+	public Temp genSCopy(Tree.Expr expr) {
+		Class c = ((ClassType) expr.type).getSymbol();
+		Temp obj = genDirectCall(c.getNewFuncLabel(), BaseType.INT);
+
+		Label loop = Label.createLabel();
+		Label exit = Label.createLabel();
+		Temp cnt = genLoadImm4(c.getSize());
+		Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
+
+		genMark(loop);
+		genBeqz(cnt, exit);
+		genAssign(cnt, genSub(cnt, unit));
+		genStore(genLoad(genAdd(expr.val, cnt), 0, false), genAdd(obj, cnt), 0);
+		genBranch(loop);
+		genMark(exit);
+
+		// store vtable
+		Temp vt = genLoadVTable(c.getVtable());
+		genStore(vt, obj, 0);
+		return obj;
+	}
+
+	public Temp genDCopy(Temp old_obj, Class c) {
+		Temp new_obj = genDirectCall(c.getNewFuncLabel(), BaseType.INT);   
+
+		Label loop = Label.createLabel();
+		Label exit = Label.createLabel();
+		Temp cnt = genLoadImm4(c.getSize());
+		Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
+
+		Temp old_pt = createTempI4();
+		Temp new_pt = createTempI4();
+		genAssign(old_pt, old_obj);
+		genAssign(new_pt, new_obj);
+
+		Iterator<Symbol> iter = c.getAssociatedScope().iterator();
+		while (iter.hasNext()) {
+			Symbol sym = iter.next();
+		}
+
+		genMark(loop);
+		genBeqz(cnt, exit);
+
+		genBranch(loop);
+		genMark(exit);
+
+		// store vtable
+		Temp vt = genLoadVTable(c.getVtable());
+		genStore(vt, new_obj, 0);
+		return new_obj;
+	}
+
+	/*
+	// should be modified
+	public void genNewForClass(Class c) {
+		currentFuncty = new Functy();
+		currentFuncty.label = Label.createLabel(
+				"_" + c.getName() + "_" + "New", true);
+		c.setNewFuncLabel(currentFuncty.label);
+		currentFuncty.paramMemo = Tac.genMemo("");
+		genMark(currentFuncty.label);
+		Temp size = genLoadImm4(c.getSize());
+		genParm(size);
+		Temp newObj = genIntrinsicCall(Intrinsic.ALLOCATE);
+		int time = c.getSize() / OffsetCounter.WORD_SIZE - 1;
+		if (time != 0) {
+			Temp zero = genLoadImm4(0);
+			if (time < 5) {
+				for (int i = 0; i < time; i++) {
+					genStore(zero, newObj, OffsetCounter.WORD_SIZE * (i + 1));
+				}
+			} else {
+				Temp unit = genLoadImm4(OffsetCounter.WORD_SIZE);
+				Label loop = Label.createLabel();
+				Label exit = Label.createLabel();
+				newObj = genAdd(newObj, size);
+				genMark(loop);
+				genAssign(newObj, genSub(newObj, unit));
+				genAssign(size, genSub(size, unit));
+				genBeqz(size, exit);
+				genStore(zero, newObj, 0);
+				genBranch(loop);
+				genMark(exit);
+			}
+		}
+		genStore(genLoadVTable(c.getVtable()), newObj, 0);
+		genReturn(newObj);
+		endFunc();
+	}
+	*/
 
 }

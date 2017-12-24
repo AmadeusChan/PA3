@@ -1,37 +1,60 @@
 class A {
-	void go() {
-		Print("class A\n");
+	int a;
+	void setA(int x) {
+		a = x;
 	}
-	void exec() {
-		go();
-	}
-}
-
-class B extends A {
-	void go() {
-		Print("class B\n");
-	}
-	void exec() {
-		this.go();
+	void printA() {
+		Print(a);
+		Print("\n");
 	}
 }
 
-class C extends B {
-	void go() {
-		Print("class B\n");
+class B {
+	int b;
+	class A a;
+	void init() {
+		a = new A();
 	}
-	void hello() {
-		super.exec();
+	void setB(int x) {
+		b = x;
 	}
-	void exec() {
-		this.go();
+	void printB() {
+		Print(b);
+		Print("\n");
+	}
+	void setA(int x) {
+		a.setA(x);
+	}
+	void printA() {
+		a.printA();
 	}
 }
 
 class Main {
 	static void main() {
-		class C c;
-		c = new C();
-		c.hello();
+		class B b1;
+		class B b2;
+
+		b1 = new B();
+		b1.init();
+
+		b1.setA(1);
+		b1.setB(2);
+		b1.printA();
+		b1.printB();
+
+		b2 = scopy(b1);
+
+		b2.printA();
+		b2.printB();
+
+		b2.setA(3);
+		b2.setB(4);
+
+		b2.printA();
+		b2.printB();
+
+		b1.printA();
+		b1.printB();
 	}
 }

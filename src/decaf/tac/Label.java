@@ -1,6 +1,9 @@
 package decaf.tac;
 
 public class Label {
+	public static Label SCOPY_LABEL;
+	public static Label DCOPY_LABEL;
+
 	public int id;
 
 	public String name;

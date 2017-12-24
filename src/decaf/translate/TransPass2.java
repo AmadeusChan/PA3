@@ -481,9 +481,22 @@ public class TransPass2 extends Tree.Visitor {
 	*/
 
 	@Override
-	public void visitSuperExpr(Tree.SuperExpr SuperExpr) {
-		SuperExpr.val = currentThis;
+	public void visitSuperExpr(Tree.SuperExpr superExpr) {
+		superExpr.val = currentThis;
 		//callExpr.symbol.getScope().getOwner().getVtable(); 
 	}
+
+	@Override 
+	public void visitSCopyExpr(Tree.SCopyExpr expr) {
+		expr.expr.accept(this);
+		expr.val = tr.genSCopy(expr.expr);
+	}
+
+	/*
+	@Override
+	public void visitDCopyExpr(Tree.DCopyExpr expr) {
+		expr.val = tr.genDCopy(expr);
+	}
+	*/
 
 }
